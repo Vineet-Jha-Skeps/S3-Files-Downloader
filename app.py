@@ -102,29 +102,6 @@ def list_s3_files(bucket_name, folder_path, s3_client):
             files_list.append(file.get('Key')) 
     return files_list
 
-def filter_files_by_date_old(files, start_date, end_date, product, s3_path_given):
-    """Filters files by date range based on their names and ensures they are .txt files with 'transaction' in the name."""
-    filtered_files = []
-    for file in files:
-        try:
-            file_name = os.path.basename(file) 
-            if file_name.endswith(".txt"):
-                if product.split()[0] in ['AF', 'CP']: 
-                    date_str = file_name.split('_')[-1].split('.')[0]  # Extract date part
-                    file_date = datetime.strptime(date_str, '%Y%m%d').date()
-                elif product.split()[0] == 'NF':
-                    date_str = file_name.split("_", 2)[-1].split(".")[0]
-                    file_date = datetime.strptime(date_str, '%Y_%m_%d').date()
-
-                if start_date <= file_date <= end_date:
-                    if s3_path_given:
-                        filtered_files.append(file)
-                    else:
-                        if "transaction" in file_name:
-                            filtered_files.append(file)
-        except ValueError:
-            continue  # Skip files that don't match the date format
-    return filtered_files
 
 def filter_files_by_date(files, start_date, end_date, product, s3_path_given):
     """Filters files by date range based on their names and ensures they are .txt files with 'transaction' in the name."""
@@ -133,10 +110,10 @@ def filter_files_by_date(files, start_date, end_date, product, s3_path_given):
         try:
             file_name = os.path.basename(file) 
             if product.split()[0] in ['FNBO', 'CP']: 
-                date_str = file_name.split('_')[-1].split('.')[0]  # Extract date part
+                date_str = file_name.split('.')[0][-8:]  # Extract date part
                 file_date = datetime.strptime(date_str, '%Y%m%d').date()
             elif product.split()[0] == 'NF':
-                date_str = file_name.split("_", 2)[-1].split(".")[0]
+                date_str = file_name.split(".")[0][-10:]
                 file_date = datetime.strptime(date_str, '%Y_%m_%d').date()
 
             if start_date <= file_date <= end_date:
