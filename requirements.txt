@@ -1,0 +1,4 @@
+boto3==1.35.88
+pandas==2.2.3
+selenium==4.27.1
+streamlit==1.41.1
