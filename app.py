@@ -50,7 +50,7 @@ def fetch_credentials_via_selenium(account_id):
         driver.get("https://d-90670e2182.awsapps.com/start/#/?tab=accounts")  
 
         # Locate the account list div
-        wait = WebDriverWait(driver, 40)
+        wait = WebDriverWait(driver, 60)
 
         account_list_div = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "div[data-testid='account-list']")))
 
@@ -60,8 +60,10 @@ def fetch_credentials_via_selenium(account_id):
         for button in account_buttons:
             try:
                 # Find the div containing account information
-                account_info_div = button.find_element(By.CSS_SELECTOR, ".awsui_child_18582_j01vr_149:nth-of-type(2)")
-                account_p = account_info_div.find_element(By.CSS_SELECTOR, "p.awsui_color-text-body-secondary_18wu0_1gw4i_302")
+                account_info_div = button.find_element(By.CSS_SELECTOR, ".awsui_child_18582_lbexh_149:nth-of-type(2)")
+                # changing j01vr to lbexh on 20250215
+                account_p = account_info_div.find_element(By.CSS_SELECTOR, "p.awsui_color-text-body-secondary_18wu0_1yxfb_302")
+                # changing 1gw4i to 1yxfb on 20250215
                 account_text = account_p.find_element(By.TAG_NAME, "div").text
 
                 # Extract account ID and name
@@ -76,7 +78,8 @@ def fetch_credentials_via_selenium(account_id):
 
                     # Locate input fields for access keys and secret keys
                     time.sleep(3)
-                    keys_to_copy = driver.find_elements(By.CSS_SELECTOR, "input.awsui_input_2rhyz_1k2au_149.awsui_input-readonly_2rhyz_1k2au_196")
+                    keys_to_copy = driver.find_elements(By.CSS_SELECTOR, "input.awsui_input_2rhyz_6kb1z_149.awsui_input-readonly_2rhyz_6kb1z_196")
+                    # changing 1k2au to 6kb1z
 
                     access_key = keys_to_copy[2].get_attribute("value")
                     secret_key = keys_to_copy[3].get_attribute("value")
@@ -152,7 +155,7 @@ def download_files(files, bucket_name, local_folder, s3_client):
     """Downloads specified files from S3 to a local folder."""
     print("Inside Downloads")
     if not os.path.exists(local_folder):
-        os.makedirs(local_folder)
+        os.makedirs(local_folder, exist_ok=True)
     for file in files:
         local_file_path = os.path.join(local_folder, os.path.basename(file))
         s3_client.download_file(bucket_name, file, local_file_path)
@@ -258,7 +261,7 @@ if start_btn:
             elif criteria == "File Names":
                 filtered_files = filter_files_by_exact_matches(all_files, exact_names)
             elif criteria == 'All Files':
-                filtered_files = all_files
+                filtered_files = all_files[1:]
 
             if user_folder.strip():
                 download_folder = user_folder
